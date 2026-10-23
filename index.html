@@ -1,0 +1,231 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sunstruck 103°</title>
+  <meta name="description" content="A Houston heat-safety game. Get across the neighborhood to the cooling center, and help the people you meet on the way.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Pixelify+Sans:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Crect x='5' y='2' width='6' height='12' fill='%23f2b13c'/%3E%3Crect x='3' y='4' width='10' height='8' fill='%23f2b13c'/%3E%3Crect x='2' y='5' width='12' height='6' fill='%23f2b13c'/%3E%3Crect x='5' y='4' width='3' height='3' fill='%23fde58a'/%3E%3C/svg%3E">
+</head>
+<body class="loading">
+  <div id="loader" class="loader" aria-label="Loading"><div class="loader-sun"></div></div>
+  <canvas id="game"></canvas>
+
+  <!-- title -->
+  <section id="title" class="title">
+    <div class="title-inner">
+      <h1 class="logo">
+        <span class="logo-word">Sunstruck</span>
+        <span class="logo-num">103°</span>
+      </h1>
+      <p class="tagline">A Houston heat-safety game</p>
+      <div class="title-buttons">
+        <button id="btn-start" class="btn primary big">Start</button>
+        <button id="btn-howto" class="btn big">How to play</button>
+      </div>
+
+      <div id="howto" class="panel howto hidden">
+        <p>The power's out and it's 103° outside. Walk to the cooling center at the library before you overheat.</p>
+        <ul>
+          <li><b>The sun heats you up.</b> Asphalt heats you fastest and grass slowest. Shade cools you down, so walk from shadow to shadow.</li>
+          <li><b>You have a water bottle.</b> Drink before you feel bad, and refill at fountains and water tables.</li>
+          <li><b>Your neighbors need help too.</b> Talk to them, read their symptoms, and pick what to do.</li>
+          <li><b>Read the signs.</b> They have real numbers about heat in Houston.</li>
+        </ul>
+        <div class="keys">
+          <span><span class="key">WASD</span> or arrows to walk</span>
+          <span><span class="key">Shift</span> run (hotter)</span>
+          <span><span class="key">E</span> talk / read</span>
+          <span><span class="key">Q</span> drink</span>
+          <span><span class="key">P</span> pause + map</span>
+          <span><span class="key">R</span> restart</span>
+          <span><span class="key">M</span> sound</span>
+        </div>
+      </div>
+
+      <p class="title-foot"><span id="title-best"></span></p>
+    </div>
+  </section>
+
+  <!-- in-game HUD -->
+  <div id="hud" class="hud hidden">
+    <div class="panel hud-heat">
+      <div class="hud-row">
+        <span class="label">Body heat</span>
+        <span id="temp" class="temp">99.8°F</span>
+      </div>
+      <div id="meter" class="meter" data-tone="ok">
+        <div id="meter-fill" class="meter-fill"></div>
+        <i style="left:35%"></i><i style="left:55%"></i><i style="left:70%"></i><i style="left:85%"></i>
+      </div>
+      <div id="status" class="status" data-tone="ok">Feeling okay</div>
+      <div class="water">
+        <span class="key">Q</span>
+        <span class="label">Water</span>
+        <span id="bottle" class="bottle"></span>
+      </div>
+      <div id="items" class="items"></div>
+    </div>
+
+    <div class="hud-right">
+      <div class="panel hud-info">
+        <div class="clock-row"><span id="clock">3:00 PM</span><span class="weather">103°F</span></div>
+        <div class="elapsed">Time <b id="elapsed">0:00</b></div>
+        <div class="count-row">
+          <span>Helped <b id="helped">0/6</b></span>
+          <span>Facts <b id="read">0/8</b></span>
+        </div>
+      </div>
+      <div class="hud-buttons">
+        <button id="btn-pause" class="btn small">Map / pause</button>
+        <button id="btn-mute" class="btn small">Sound on</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="toasts" class="toasts"></div>
+  <div id="prompt" class="prompt hidden"><span class="key">E</span><span id="prompt-text"></span></div>
+
+  <!-- dialog box -->
+  <div id="dialog" class="dialog hidden">
+    <canvas id="dlg-portrait" class="portrait" width="64" height="64"></canvas>
+    <div class="dlg-main">
+      <div class="dlg-head">
+        <span id="dlg-name" class="dlg-name"></span>
+        <span id="dlg-verdict" class="dlg-verdict hidden"></span>
+      </div>
+      <p id="dlg-text" class="dlg-text"></p>
+      <div id="dlg-choices" class="dlg-choices hidden"></div>
+    </div>
+    <div id="dlg-next" class="dlg-next hidden"></div>
+  </div>
+
+  <!-- flyer -->
+  <div id="card" class="overlay card-wrap hidden">
+    <article class="flyer">
+      <div class="flyer-tape"></div>
+      <div class="flyer-band">Did you know?</div>
+      <h2 id="card-title"></h2>
+      <div id="card-body" class="flyer-body"></div>
+      <p id="card-source" class="flyer-source"></p>
+      <div class="flyer-foot">
+        <span id="card-num" class="flyer-num"></span>
+        <button id="card-close" class="btn primary">Got it <span class="key">E</span></button>
+      </div>
+    </article>
+  </div>
+
+  <!-- coach tip -->
+  <div id="coach" class="coach hidden">
+    <div class="panel coach-card">
+      <h2 id="coach-title"></h2>
+      <p id="coach-text"></p>
+      <button id="coach-close" class="btn primary">Got it <span class="key">E</span></button>
+    </div>
+  </div>
+
+  <!-- pause -->
+  <div id="pause" class="overlay hidden">
+    <div class="panel sheet pause-sheet">
+      <h2>Paused</h2>
+      <canvas id="map" width="600" height="500"></canvas>
+      <div class="legend">
+        <span><i class="sw you"></i>You</span>
+        <span><i class="sw lib"></i>Library</span>
+        <span><i class="sw water"></i>Water</span>
+        <span><i class="sw help"></i>Someone who needs help</span>
+      </div>
+      <div class="sheet-buttons">
+        <button id="btn-resume" class="btn primary">Keep going <span class="key">P</span></button>
+        <button id="btn-restart" class="btn">Start over <span class="key">R</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- win -->
+  <div id="win" class="overlay scroll hidden">
+    <div class="panel sheet end-sheet win-sheet">
+      <h2 id="win-title"></h2>
+      <p id="win-sub" class="end-sub"></p>
+      <div class="score"><span class="score-label">Score</span><span id="win-score" class="score-value"></span><span id="win-score-note" class="score-note"></span></div>
+      <div id="win-stats" class="stats"></div>
+
+      <div class="cols">
+        <section>
+          <h3>People you met</h3>
+          <ul id="win-people" class="people"></ul>
+        </section>
+        <section>
+          <h3>What the signs said</h3>
+          <ul id="win-tips" class="tips"></ul>
+        </section>
+      </div>
+
+      <section class="learned">
+        <h3>Achievements</h3>
+        <ul id="win-ach" class="achievements"></ul>
+      </section>
+
+      <section class="signs">
+        <h3>The two to know</h3>
+        <div class="signs-grid">
+          <div class="sign-box exhaustion">
+            <h4>Heat exhaustion</h4>
+            <p>Heavy sweating. Cold, clammy skin. Dizzy, headache, nauseous, weak.</p>
+            <p class="do">Get somewhere cool, loosen clothes, sip water.</p>
+          </div>
+          <div class="sign-box stroke">
+            <h4>Heat stroke</h4>
+            <p>Body temp 103°F or higher. Hot, red skin. Confused, slurring, or passing out.</p>
+            <p class="do">Call 911. Cool them down fast. No drinks.</p>
+          </div>
+        </div>
+        <p class="name-note">The name comes from 103°: the heat index where the National Weather Service calls heat dangerous, and the body temperature where heat stroke starts.</p>
+      </section>
+
+      <div class="sheet-buttons">
+        <button id="win-again" class="btn primary big">Play again <span class="key">R</span></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- lose -->
+  <div id="lose" class="overlay scroll hidden">
+    <div class="panel sheet end-sheet">
+      <div class="end-band hot">Heat stroke</div>
+      <h2 id="lose-title"></h2>
+      <p id="lose-sub" class="end-sub"></p>
+
+      <div class="cols">
+        <section class="aid stroke">
+          <h3>If someone has heat stroke</h3>
+          <p class="aid-sub">Hot skin, confused, passing out</p>
+          <ol id="lose-stroke"></ol>
+        </section>
+        <section class="aid exhaustion">
+          <h3>If it's heat exhaustion</h3>
+          <p class="aid-sub">Sweaty, dizzy, nauseous, still alert</p>
+          <ol id="lose-exhaustion"></ol>
+        </section>
+      </div>
+
+      <p class="hint"><b>Next time:</b> <span id="lose-hint"></span></p>
+
+      <div class="sheet-buttons">
+        <button id="lose-again" class="btn primary big">Try again <span class="key">R</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="fade" class="fade"></div>
+
+  <script src="world.js"></script>
+  <script src="art.js"></script>
+  <script src="content.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
