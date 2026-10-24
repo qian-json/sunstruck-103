@@ -6,7 +6,7 @@
 
 const PLAYER_SPEED = 58;          // walking, px per second
 const SPRINT_SPEED = 92;          // holding shift
-const HEAT_START = 20;            // you start a little warm, the house has no AC
+const HEAT_START = 12;            // you start a little warm, the house has no AC
 
 // heat gained per second in direct sun, by what you're standing on
 const SUN_HEAT = { asphalt: 6, concrete: 5, dirt: 4, grass: 3 };
@@ -995,7 +995,7 @@ function showLose() {
   };
   fill('lose-stroke', FIRST_AID.stroke);
   fill('lose-exhaustion', FIRST_AID.exhaustion);
-  const sunPct = S.t > 0 ? Math.round((S.sunSeconds / S.t) * 100) : 0;
+  const sunPct = S.t > 0 ? Math.min(100, Math.round((S.sunSeconds / S.t) * 100)) : 0;
   let hint;
   if (S.sips === BOTTLE_SIPS && S.t > 20) hint = "You never drank your water. Press Q to drink, and drink before you feel bad.";
   else if (sunPct > 70) hint = `You spent ${sunPct}% of your walk in direct sun. Try the bayou trail or Oak Ln. They have more shade.`;
@@ -1262,7 +1262,6 @@ function render(dt) {
       let alpha = 1;
       if (d.tree && p && p.y < d.base - 2 && p.y > d.base - 48 && Math.abs(p.x - (d.x + 30)) < 25) alpha = 0.55;
       if (d.shelter && p && p.x > d.x && p.x < d.x + d.img.width && p.y > d.y && p.y < d.base + 4) alpha = 0.55;
-      if (d.building && p && p.y < d.y + 16 && p.y > d.y - 4 && p.x > d.x && p.x < d.x + d.img.width) alpha = 0.7;
       g.globalAlpha = alpha;
       g.drawImage(d.img, d.x - cx, d.y - cy);
       g.globalAlpha = 1;

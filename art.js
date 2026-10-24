@@ -1029,9 +1029,6 @@ function makeLibrary(b) {
   const wallH = 48;
   const wallTop = oy + fh - wallH;
   flatRoof(ctx, ox - 2, 0, fw + 4, wallTop + 1, 4242, 3);
-  // skylight
-  rect(ctx, ox + 70, 12, 40, 14, '#6f8fa0'); rect(ctx, ox + 70, 12, 40, 1, '#cfe2ea');
-  for (let i = 0; i < 40; i += 8) rect(ctx, ox + 70 + i, 12, 1, 14, '#4b5f6a');
 
   // brick
   for (let y = wallTop; y < oy + fh; y++) {
@@ -1133,7 +1130,8 @@ function makeApartments(b) {
   // stairs
   for (let i = 0; i < 7; i++) rect(ctx, ox + fw - 24 + i * 2, wallTop + 22 + i * 3, 8, 2, '#9d8f7c');
   const s = 'BELL APTS';
-  rect(ctx, ox + 4, oy + fh - 12, textWidth(s) + 4, 8, '#3b2a20'); drawText(ctx, s, ox + 6, oy + fh - 10, '#e8dfcc');
+  const sx = ox + 64;
+  rect(ctx, sx, oy + fh - 12, textWidth(s) + 4, 8, '#3b2a20'); drawText(ctx, s, sx + 2, oy + fh - 10, '#e8dfcc');
   rect(ctx, ox, oy + fh - 2, fw, 2, '#8d8478');
   return { canvas: outline(c), ox: -2, oy: -6 };
 }

@@ -250,7 +250,7 @@ function buildWorld() {
   prop({ kind: 'freebox', x: 2, y: 37, solid: true });
 
   const flyerAt = [
-    [10, 37], [14, 29], [17, 12], [29, 12], [23, 37], [43, 32], [36, 31], [11, 22],
+    [10, 37], [14, 29], [17, 12], [27, 12], [23, 37], [43, 32], [36, 31], [11, 22],
   ];
   flyerAt.forEach(([x, y], i) => {
     spot({ kind: 'flyer', tip: i, x, y, label: 'Read the sign' });
@@ -281,7 +281,7 @@ function buildWorld() {
     { id: 'dog', x: 50.5, y: 35.3, dir: 'up', look: null, encounter: true, car: world.dogCar, fix: null },
     { id: 'luis', x: 28.5, y: 44.05, dir: 'down', look: 'luis', pose: 'sit', encounter: true, fix: { x: 30, y: 45.8, pose: 'sit', dir: 'down' } },
 
-    { id: 'mom', x: 24.5, y: 35.8, dir: 'down', look: 'mom', pose: 'sit', talk: 'mom' },
+    { id: 'mom', x: 24.5, y: 35.95, dir: 'down', look: 'mom', pose: 'sit', talk: 'mom' },
     { id: 'volunteer', x: 31, y: 22.4, dir: 'down', look: 'volunteer', talk: 'volunteer' },
     { id: 'vendor', x: 34, y: 7.9, dir: 'down', look: 'vendor', inKiosk: true },
     { id: 'kid2', x: 32.5, y: 32.2, dir: 'right', look: 'kid2', splash: true },
