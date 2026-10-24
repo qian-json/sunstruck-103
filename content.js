@@ -90,7 +90,7 @@ const COACH = {
   },
   stroke: {
     title: 'This is heat stroke',
-    text: "You're confused and your skin is hot. In real life, someone should call 911 for you. Get to shade now.",
+    text: "You're confused and your skin is hot. In real life, someone should call 911 for you, and you shouldn't drink anything because you could choke. Get to shade now.",
     point: 'shade',
   },
   empty: {

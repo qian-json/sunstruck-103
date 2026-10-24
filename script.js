@@ -463,7 +463,7 @@ function useSpot(s) {
     const k = s.x + ',' + s.y;
     if ((S.stationCd[k] || 0) > 0) { floatText(S.player.x, S.player.y - 26, 'SIP SIP', '#bfe3f2'); return; }
     S.sips = BOTTLE_SIPS;
-    S.heat = Math.max(0, S.heat - REFILL_COOLING);
+    if (S.stage < 4) S.heat = Math.max(0, S.heat - REFILL_COOLING);
     S.stationCd[k] = STATION_COOLDOWN;
     S.stationsUsed.add(k);
     if (S.stationsUsed.size >= 3) unlock('hydrated');
@@ -496,6 +496,13 @@ function useSpot(s) {
 
 function sip() {
   if (S.sipCd > 0) return;
+  // someone with heat stroke shouldn't drink (choking risk), so you can't either
+  if (S.stage >= 4) {
+    floatText(S.player.x, S.player.y - 26, "CAN'T DRINK", '#e8a08a');
+    Sound.bad();
+    S.sipCd = 0.8;
+    return;
+  }
   if (S.sips <= 0) {
     coach('empty');
     floatText(S.player.x, S.player.y - 26, 'EMPTY', '#e8a08a');
